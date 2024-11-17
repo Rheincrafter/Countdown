@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 80%;
+            max-width: 400px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .countdown {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #555;
+            display: inline-block;
+        }
+        .circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: red;
+            display: inline-block;
+            margin-left: 10px;
+            visibility: hidden; /* Der Kreis wird nur angezeigt, wenn der Countdown läuft */
+        }
+        .circle.blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% {
+                visibility: visible;
+            }
+            50% {
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Countdown</h1>
+        <p>Gib ein Ziel-Datum im Format: <b>YYYY-MM-DD HH:MM:SS</b></p>
+        <input type="text" id="dateInput" placeholder="2024-12-31 23:59:59">
+        <button onclick="startCountdown()">Starten</button>
+        <button onclick="stopCountdown()">Abbrechen</button>
+        <div class="countdown" id="countdownDisplay">Verbleibende Zeit: -</div>
+        <div class="circle" id="blinkCircle"></div>
+    </div>
+    <script>
+        let countdownInterval;
+
+        function startCountdown() {
+            const dateInput = document.getElementById("dateInput").value;
+            const targetDate = new Date(dateInput);
+
+            if (isNaN(targetDate.getTime())) {
+                alert("Bitte gib ein gültiges Datum im Format 'YYYY-MM-DD HH:MM:SS' ein.");
+                return;
+            }
+
+            clearInterval(countdownInterval); // Falls ein Countdown läuft, abbrechen
+
+            const blinkCircle = document.getElementById("blinkCircle");
+            blinkCircle.classList.add("blink"); // Kreis blinken lassen
+            blinkCircle.style.visibility = "visible";
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const remainingTime = targetDate - now;
+
+                if (remainingTime <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById("countdownDisplay").textContent = "Der Countdown ist abgelaufen!";
+                    blinkCircle.style.visibility = "hidden"; // Kreis ausblenden
+                    blinkCircle.classList.remove("blink");
+                    return;
+                }
+
+                const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                document.getElementById("countdownDisplay").textContent = 
+                    `Verbleibende Zeit: ${days} Tage, ${hours} Stunden, ${minutes} Minuten, ${seconds} Sekunden`;
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            clearInterval(countdownInterval);
+            document.getElementById("countdownDisplay").textContent = "Verbleibende Zeit: -";
+            const blinkCircle = document.getElementById("blinkCircle");
+            blinkCircle.style.visibility = "hidden"; // Kreis ausblenden
+            blinkCircle.classList.remove("blink");
+        }
+    </script>
+</body>
+</html>
